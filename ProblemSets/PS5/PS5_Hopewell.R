@@ -24,11 +24,7 @@ library(twitteR)
 requestURL = "https://api.twitter.com/oauth/request_token"
 accessURL = "https://api.twitter.com/oauth/access_token"
 authURL = "https://api.twitter.com/oauth/authorize"
-consumerKey = "Zv7p1sKiTp236RbXo3wUccahW"
-consumerSecret = "z3mMCSjNuJ6jzwDGntfIStURVi7lQp6IOIetKyEOpwFXjzck5f"
 
-accessToken = "3000242912-Td8sR4CUzfoelLJhXxDqc4aaInNDLfH0rJlyIW9"
-accessSecret = "DdN9jHRN4qGOaTmBTQmEAYB78C9Oo1ertW5u34W4dQsNc"
 
 setup_twitter_oauth(consumerKey,
                     consumerSecret,
