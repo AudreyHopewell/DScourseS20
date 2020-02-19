@@ -24,7 +24,11 @@ library(twitteR)
 requestURL = "https://api.twitter.com/oauth/request_token"
 accessURL = "https://api.twitter.com/oauth/access_token"
 authURL = "https://api.twitter.com/oauth/authorize"
+consumerKey = Sys.getenv("TWITTER_API_KEY")
+consumerSecret = Sys.getenv("TWITTER_API_SECRET_KEY")
 
+accessToken = Sys.getenv("TWITTER_TOKEN")
+accessSecret = Sys.getenv("TWITTER_SECRET_TOKEN")
 
 setup_twitter_oauth(consumerKey,
                     consumerSecret,
