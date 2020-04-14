@@ -1,0 +1,102 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\title{PS11: Rough Draft}
+\author{Audrey Hopewell }
+\date{April 14, 2020}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This project is inspired by FiveThirtyEight's \href{https://fivethirtyeight.com/tag/hollywood-taxonomy/}{Hollywood Taxonomy series}, in which an actor's movies are classified into 3-5 categories by plotting their box office gross against their Rotten Tomatoes rating. This results in categories like "The Most Cowbells" for Will Ferrell (high grossing and highly-rated, such as The LEGO Movie) \cite{ferrell} and "Hope Sinks" for Sandra Bullock (low grossing and low-rated, such as Miss Congeniality 2)\cite{bullock}. 
+
+These categories are humorous and provide retrospective insight, but is there a way to make this concept more useful? For example, is there something about these movies themselves (i.e. their characteristics before they are filmed, edited, and released) that predicts which category they'll fit into? If so, knowing these characteristics could help actors make more informed decisions about whether a movie will become a beloved but unprofitable cult classic or a box office smash with terrible reviews.
+
+\section{Literature Review}
+\begin{itemize}
+    \item Actors are likely interested in both revenue and reviews because Hollywood is a highly reputation-based industry. A history of appearing in well-received and profitable films positively affects an actor's ability to negotiate for future desired projects \cite{ebbers}
+    \item Hollywood has been characterized as a project-based industry because each film is made by a novel group of cast and crew. The film itself is a project firm because it comes together, creates an output, and then dissolves \cite{ferriani}\cite{jones}. The nature of the industry means that actors constantly negotiate new employment agreements based on the success of past projects.
+    \item There is a lot of machine learning literature attempting to predict movie revenue or profitability based on pre-release data (e.g. cast and director, release season, or text analysis of the script), post-release data (e.g. social media sentiment) and econometric work analyzing the relationship between movie characteristics and revenue \cite{lash}\cite{baimbridge}\cite{boccardelli}\cite{elberse}\cite{eliashberg}\cite{parimi}\cite{simonoff}\cite{gopinath}\cite{apala}. This work typically includes variables related to the starring actors, such as genre expertise\cite{lash} or historical average revenue\cite{elberse}, with the aim of helping investors make more informed decisions about funding the movie after the main cast is already involved.
+    \item Typical measures of movie success include profit\cite{lash}, revenue\cite{apala}\cite{gopinath}\cite{parimi}\cite{simonoff}, or individual and collective awards\cite{cattani}
+    \item Given this, how should actors decide whether to sign on to a movie?
+\end{itemize}
+
+\section{Data}
+\begin{itemize}
+    \item I use a \href{https://www.kaggle.com/rounakbanik/the-movies-dataset#movies_metadata.csv}{movie metadata set} from Kaggle, which includes information compiled from IMDb's various publicly available data sets. This includes the following variables:
+    \begin{itemize}
+         \item whether the movie is "adult"
+        \item which "collection" or series it belongs to, if any (e.g. Toy Story)
+        \item its budget
+        \item its genre(s)
+        \item its language
+        \item its original title
+        \item production company
+        \item production country
+        \item release date
+        \item revenue
+        \item runtime
+        \item which languages are spoken in the film
+        \item status (e.g. released, in production)
+        \item its tagline
+        \item its title
+        \item average IMDb rating
+        \item how many ratings it has received on IMDb
+        \item an overview (summary) of the movie
+    \end{itemize}
+    \item For simplicity's sake, I will use IMDb rating as a substitute for FiveThirtyEight's use of Rotten Tomatoes. Rotten Tomatoes is the more popular ratings site, but IMDb's data is more easily downloadable and already part of the data set.
+    \item I clean the data by omitting movies that are considered adult (as I only want mainstream movies that would be released in theaters),movies that are not in the English language, those that were not produced in the United States, and movies that went straight to video. I limit the data to only movies that have been released (otherwise box office and rating data would not be available). I also eliminate movies released before 1990 and movies for which revenue is listed as 0.
+    \item After cleaning, 4128 movies remain for analysis.
+\end{itemize}
+
+\section{Empirical Methods}
+\begin{itemize}
+    \item Dependent variable is which category the movie falls into. The assumption is that for an actor's reputation, the general reputation of a movie (as represented by its quadrant on the graph of revenue vs. IMDb rating) is more important than the exact revenue or popularity numbers of the movie. As the literature demonstrates, movie success cannot be explained fully by the actors themselves\cite{lash}, so general movie reputation would seem to be more important.
+    \item Categories are formed by plotting all movies (after data cleaning and filtering) by their revenue and IMDb rating, then splitting them into four  categories based on the mean value of each variable. Thus, a movie is "high revenue" if it takes in more revenue than average and "highly rated" if it is more highly rated than average.
+    \item Independent variables are as follows:
+    \begin{itemize}
+        \item dummy variable for whether the movie belongs to a collection (i.e. is part of a series)
+        \item movie budget
+        \item dummy variables for each genre
+        \item dummy variable for each production company
+        \item dummy variable for each additional production country other than the U.S.
+        \item dummy variable for each release season (this is an imperfect variable because release may be rushed or delayed and so actual release season might be different from planned release season. However, it is included since most movies should be released around the time they were originally planned to be)
+        \item dummy variable for each additional spoken language other than English
+        \item I'm considering doing sentiment analysis on the "overview" of each movie and using the prominence of each sentiment as a variable. This could approximate the tone of the movie beyond genre.
+    \end{itemize}
+    \item Then, I will try to determine which machine learning algorithm will most accurately predict the outcome - movie category - given the extremely basic variables provided. I'll test:
+    \begin{itemize}
+        \item Trees
+        \item Logistic regression
+        \item Naive Bayes
+        \item kNN
+        \item SVM
+    \end{itemize}
+    \item Is there a way to make the prediction more accurate by including information beyond the movie's metadata? Reputation is important for actors looking for jobs, but a director's reputation is also key in attracting actors to a project since they're more likely to be signed on before the cast\cite{elberse}. Using a cast and crew \href{https://www.kaggle.com/rounakbanik/the-movies-dataset#credits.csv}{data set}, I extract the director for each movie in my data set. Then, I construct a very basic measure of "director reputation" similar to the movie reputation measure: I assign them the category into which the plurality of their movies fall. This director reputation is then included as an independent variable.
+    \item We can expand the above idea by also creating a writer reputation variable, in which each writer is assigned the category into which the plurality of their movies fall.
+    \item We can also analyze the movies based on profitability (rather than revenue) and rating. I construct a new variable, profitability, equal to the different between revenue and budget, and then create profit categories. "High" profit is greater-than-mean profit. Then, I will re-run the algorithms to see:
+    \begin{itemize}
+        \item which does the best job at predicting the new category
+        \item whether profit-based categories are easier or harder to predict than revenue
+    \end{itemize}
+\end{itemize}
+
+\section{Research Findings}
+
+\section{Conclusion}
+Potential weaknesses and limitations:
+\begin{itemize}
+    \item IMDb ratings might be biased (e.g. people who are film buffs are more likely to use IMDb)
+    \item Director reputation obviously depends on more than the reputation of their past movies (e.g. are they difficult to work with). This type of information spreads through the concentrated social network of the Hollywood film industry\cite{ebbers} but is impossible to measure with the data we have.
+\end{itemize}
+
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
